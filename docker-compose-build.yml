@@ -1,0 +1,23 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: template_db
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres -U postgres" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  service:
+    depends_on:
+      - db # wait for db to start
+    build: .
+    environment:
+      - POSTGRES_DATASOURCE_URI=db
+    ports:
+      - 8080:8080
